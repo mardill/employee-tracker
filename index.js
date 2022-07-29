@@ -2,6 +2,7 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 const express = require('express')
 const mysql = require('mysql2');
+const cTable = require('console.table')
 
 
 const db = mysql.createConnection(
@@ -21,7 +22,9 @@ inquirer.prompt(
     {
         type: 'list',
         message: 'What would you like to do?',
-        choices: ['View All Departments', 'View All Roles', 'View All Employees'],
+        choices: ['View All Departments', 
+        'View All Roles', 
+        'View All Employees'],
         name: 'options'
     }
 ]
@@ -29,12 +32,42 @@ inquirer.prompt(
 .then((responses) => {
 
         if(responses.options === 'View All Departments'){
-            console.log(db.query('select name, id from department'))
+            viewAllDepts()
         };
         if(responses.options === 'View All Roles'){
-            return db.query('select title as r.job_title, r.id as role_id, r.salary, d.name from role r inner join department d on r.department_id = d.id')
+            viewAllRoles()
         };
         if(responses.options === "View All Employees"){
-            return db.query('select e.id as emp_id, e.first_name, e.last_name, r.title, r.salary, d.name as dept_name from employee e inner join role r on r.id = e.role_id inner join department d on d.id = r.department_id')
+            viewAllEmps()
         }
  })
+
+ const viewAllDepts = () => {
+     var query = `select name, id from department`
+    db.query(query, function(err, results){
+        console.table(results)
+    })
+ }
+
+ const viewAllRoles = () => {
+     var query = `select 
+     title as r.job_title, 
+     r.id as role_id, 
+     r.salary, 
+     d.name 
+     from role r 
+     inner join department d on r.department_id = d.id`
+ }
+
+const viewAllEmps = () => {
+    var query = `select e.id as emp_id, 
+    e.first_name, 
+    e.last_name, 
+    r.title, 
+    r.salary, 
+    d.name as dept_name 
+    from employee e 
+    inner join role r on r.id = e.role_id 
+    inner join department d on d.id = r.department_id`
+}
+
