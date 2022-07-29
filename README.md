@@ -6,6 +6,10 @@
 
 Employee tracker allows a user to request information on a department, role, and employee. It provides them with a prompt of choices for what they would like to view. They can see all employees, all roles, and all departments as well as update change/add data to the database of information connected. It's a simple interface for users to interact with the employee database.
 
+#### Example Output
+
+[![Alt](images/example.png)]
+
 ## Table of Contents
 
 * [Installation](#installation)
