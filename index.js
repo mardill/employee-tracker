@@ -4,60 +4,66 @@ const express = require('express')
 const mysql = require('mysql2');
 const cTable = require('console.table')
 
-
 const db = mysql.createConnection(
     {
-      host: 'localhost',
-      // MySQL username,
-      user: 'root',
-      // MySQL password
-      password: 'password',
-      database: 'movie_db'
+        host: 'localhost',
+        // MySQL username,
+        user: 'root',
+        // MySQL password
+        password: 'password',
+        database: 'employee_db'
     },
     console.log(`Connected to the movies_db database.`)
-  );
+);
 
-inquirer.prompt(
-    [
+const prompt = () => {
+inquirer.prompt([
     {
         type: 'list',
         message: 'What would you like to do?',
-        choices: ['View All Departments', 
-        'View All Roles', 
-        'View All Employees'],
+        choices: ['View All Departments',
+            'View All Roles',
+            'View All Employees',
+        'Quit'],
         name: 'options'
     }
-]
-)
-.then((responses) => {
+]).then((responses) => {
+    if (responses.options === 'View All Departments') {
+        viewAllDepts();
+    };
+    if (responses.options === 'View All Roles') {
+        viewAllRoles();
+    };
+    if (responses.options === "View All Employees") {
+        viewAllEmps();
+    }
+    if(responses.options === 'Quit'){
+        db.end();
+    }
+})
+}
 
-        if(responses.options === 'View All Departments'){
-            viewAllDepts()
-        };
-        if(responses.options === 'View All Roles'){
-            viewAllRoles()
-        };
-        if(responses.options === "View All Employees"){
-            viewAllEmps()
-        }
- })
-
- const viewAllDepts = () => {
-     var query = `select name, id from department`
-    db.query(query, function(err, results){
-        console.table(results)
+const viewAllDepts = () => {
+    var query = `select name, id from department`;
+    db.query(query, function (err, results) {
+        console.table(results);
+        prompt()
     })
- }
+}
 
- const viewAllRoles = () => {
-     var query = `select 
-     title as r.job_title, 
+const viewAllRoles = () => {
+    var query = `select 
+     r.title as job_title, 
      r.id as role_id, 
      r.salary, 
-     d.name 
+     d.name as dept_name
      from role r 
-     inner join department d on r.department_id = d.id`
- }
+     inner join department d on r.department_id = d.id`;
+    db.query(query, function (err, results) {
+        console.table(results);
+        prompt();
+    })
+}
 
 const viewAllEmps = () => {
     var query = `select e.id as emp_id, 
@@ -68,6 +74,11 @@ const viewAllEmps = () => {
     d.name as dept_name 
     from employee e 
     inner join role r on r.id = e.role_id 
-    inner join department d on d.id = r.department_id`
+    inner join department d on d.id = r.department_id`;
+    db.query(query, function (err, results) {
+        console.table(results);
+        prompt();
+    })
 }
 
+prompt()
